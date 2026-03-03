@@ -1,0 +1,14 @@
+# Dependencias mínimas para ejecutar DashboardLocalConDeteccion.py
+# Nota: para Windows, si quieres soporte CUDA, instala torch siguiendo las instrucciones oficiales
+aiortc==1.6.5
+av==10.0.0
+opencv-python==4.8.1.78
+numpy==1.26.2
+torch==2.2.0
+torchvision==0.16.2
+# yolov5 se instala desde el repo (proporciona los módulos que usa torch.hub)
+git+https://github.com/ultralytics/yolov5.git@master
+# paquetes auxiliares
+seaborn==0.12.2
+tqdm==4.66.1
+

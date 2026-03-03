@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<style>
+    .boton {
+        font-size: 18px;
+        padding: 10px;
+        margin: 5px 0;
+        cursor: pointer;
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+        transition: background-color 0.3s;
+    }
+
+    .boton-verde { background-color: #4CAF50; }
+    .boton-amarillo { background-color: #FFD700; }
+    .boton-rojo { background-color: #f44336; }
+
+    .direction {
+        display: grid;
+        grid-template-rows: 100px 100px 100px;
+        grid-template-columns: 100px 100px 100px;
+        text-align: center;
+        width:80%;
+        margin: 20px auto;
+    }
+
+    .box {
+        background: #444;
+        border: 1px solid #555;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: yellowgreen;
+        font-size: 18px;
+        margin: 5px;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+    <div class="container mt-3">
+
+        <!-- 🔵 Botón de conectar (arriba del todo, ancho completo) -->
+        <button id="botonConectar" class="boton" onclick="conectarDron()">Conectar con Dron</button>
+
+        <!-- 🔵 Altura + despegar (segunda fila, orden vertical, ancho completo) -->
+        <input type="number" id="altura" class="form-control mb-2" placeholder="Altura en metros">
+
+        <!-- 🔵 Control sencillo para cambiar heading -->
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+            <input id="headingRange" type="range" min="0" max="360" value="0" style="flex:1;" oninput="document.getElementById('headingVal').innerText=this.value;" onchange="cambiarHeading(this.value)">
+            <div style="width:70px; text-align:center;"> <span id="headingVal">0</span>°</div>
+        </div>
+
+        <button id="botonDespegar" class="boton" onclick="despegarDron()">Despegar</button>
+
+        <!-- 🔵 Botón de aterrizar (tercera fila, ancho completo) -->
+        <button id="botonAterrizar" class="boton" onclick="aterrizarDron()">Aterrizar Dron</button>
+
+        <!-- 🔵 Botón RTL (nuevo) -->
+        <button id="botonRTL" class="boton" onclick="rtlDron()">RTL</button>
+
+        <!-- 🔵 Botones de dirección -->
+        <div class="direction">
+            <div onclick="moverDron('NorthWest')" class="box">NW</div>
+            <div onclick="moverDron('North')" class="box">N</div>
+            <div onclick="moverDron('NorthEast')" class="box">NE</div>
+            <div onclick="moverDron('West')" class="box">W</div>
+            <div onclick="moverDron('Stop')" class="box">Stop</div>
+            <div onclick="moverDron('East')" class="box">E</div>
+            <div onclick="moverDron('SouthWest')" class="box">SW</div>
+            <div onclick="moverDron('South')" class="box">S</div>
+            <div onclick="moverDron('SouthEast')" class="box">SE</div>
+        </div>
+
+        <!-- 🔵 Altitud debajo de los 9 botones, ancho completo -->
+        <div id="telemetriaDiv" style="font-size: 24px; text-align: center; width:100%; margin-top: 20px;">
+            <p><strong>Altitud:</strong> <span id="altitudValor">0</span> m</p>
+        </div>
+
+    </div>
+
+    <script>
+        // fixed STUDENT_ID as requested
+        const STUDENT_ID = 'juan';
+
+        // simple flag: true si el despegue fue iniciado desde este cliente
+        var despegueIniciado = false;
+        // simple flag: true si el aterrizaje fue iniciado desde este cliente
+        var aterrizajeIniciado = false;
+        // simple flag: true si el RTL fue iniciado desde este cliente
+        var rtlIniciado = false;
+
+        const client = mqtt.connect('ws://broker.hivemq.com:8000/mqtt', {
+            clean: false,
+            keepalive: 60,
+            clientId: 'webapp_' + Math.random().toString(16).substr(2, 8),
+            reconnectPeriod: 1000,
+        });
+
+        client.on('connect', function () {
+            console.log('Conectado al broker MQTT');
+            // suscribirse a los topics de respuesta para este STUDENT_ID
+            client.subscribe(`autopilotServiceDemo/${STUDENT_ID}/#`);
+        });
+
+        client.on('message', function (topic, message) {
+            // Manejo de telemetría en el topic telemetryInfo
+            if (topic.endsWith("/telemetryInfo")) {
+                try {
+                    const data = JSON.parse(message.toString());
+                    const alt = data.alt;
+                    const estado = data.state;
+
+                    // solo ponemos verde si nosotros iniciamos el despegue
+                    if (estado === "flying" && despegueIniciado) {
+                        const botonDespegar = document.getElementById('botonDespegar');
+                        botonDespegar.classList.remove('boton-amarillo');
+                        botonDespegar.classList.add('boton-verde');
+                        // ya no estamos esperando el fin del despegue
+                        despegueIniciado = false;
+                    }
+
+                    // si recibimos telemetría con estado 'landed' y nosotros iniciamos el aterrizaje
+                    if (estado === "landed" && aterrizajeIniciado) {
+                        const botonAterrizar = document.getElementById('botonAterrizar');
+                        botonAterrizar.classList.remove('boton-amarillo');
+                        botonAterrizar.classList.add('boton-verde');
+                        aterrizajeIniciado = false;
+                    }
+
+                    // si recibimos telemetría con estado 'atHome' o 'landed' y nosotros iniciamos RTL
+                    if ((estado === "atHome" || estado === "landed") && rtlIniciado) {
+                        const botonRTL = document.getElementById('botonRTL');
+                        botonRTL.classList.remove('boton-amarillo');
+                        botonRTL.classList.add('boton-verde');
+                        rtlIniciado = false;
+                    }
+
+                    if (typeof alt === 'number') {
+                        document.getElementById("altitudValor").innerText = alt.toFixed(2);
+                    } else {
+                        const altNum = parseFloat(alt);
+                        if (!isNaN(altNum)) document.getElementById("altitudValor").innerText = altNum.toFixed(2);
+                    }
+                } catch (e) {
+                    console.log('Error parseando telemetryInfo:', e, message.toString());
+                }
+            }
+
+            // eventos puntuales publicados por AutopilotService
+            else if (topic === `autopilotServiceDemo/${STUDENT_ID}/flying`) {
+                // si iniciamos el despegue, ponemos verde cuando llega el evento
+                if (despegueIniciado) {
+                    const botonDespegar = document.getElementById('botonDespegar');
+                    botonDespegar.classList.remove('boton-amarillo');
+                    botonDespegar.classList.add('boton-verde');
+                    despegueIniciado = false;
+                }
+            }
+
+            else if (topic === `autopilotServiceDemo/${STUDENT_ID}/landed` || topic === `autopilotServiceDemo/${STUDENT_ID}/atHome` || topic === `autopilotServiceDemo/${STUDENT_ID}/landing`) {
+                // evento de aterrizaje o RTL: limpiar Despegar y manejar Aterrizar/RTL si fueron iniciados aquí
+                const botonDespegar = document.getElementById('botonDespegar');
+                botonDespegar.classList.remove('boton-verde');
+                botonDespegar.classList.remove('boton-amarillo');
+                despegueIniciado = false;
+                if (aterrizajeIniciado) {
+                    const botonAterrizar = document.getElementById('botonAterrizar');
+                    botonAterrizar.classList.remove('boton-amarillo');
+                    botonAterrizar.classList.add('boton-verde');
+                    aterrizajeIniciado = false;
+                }
+                if (rtlIniciado) {
+                    const botonRTL = document.getElementById('botonRTL');
+                    botonRTL.classList.remove('boton-amarillo');
+                    botonRTL.classList.add('boton-verde');
+                    rtlIniciado = false;
+                }
+            }
+         });
+
+        function conectarDron() {
+            client.publish(`${STUDENT_ID}/autopilotServiceDemo/connect`);
+            document.getElementById('botonConectar').classList.add('boton-verde');
+            client.publish(`${STUDENT_ID}/autopilotServiceDemo/startTelemetry`);
+        }
+
+        function despegarDron() {
+            const altura = document.getElementById('altura').value;
+            if (altura) {
+                client.publish(`${STUDENT_ID}/autopilotServiceDemo/arm_takeOff`, altura);
+                // marcamos que iniciamos el despegue desde aquí
+                despegueIniciado = true;
+                // limpiamos colores de otras acciones
+                const bA = document.getElementById('botonAterrizar'); if (bA) { bA.classList.remove('boton-verde'); bA.classList.remove('boton-amarillo'); }
+                const bR = document.getElementById('botonRTL'); if (bR) { bR.classList.remove('boton-verde'); bR.classList.remove('boton-amarillo'); rtlIniciado = false; }
+                document.getElementById('botonDespegar').classList.add('boton-amarillo');
+            } else {
+                alert("Por favor, ingrese una altura válida.");
+            }
+        }
+
+        function aterrizarDron() {
+            client.publish(`${STUDENT_ID}/autopilotServiceDemo/Land`);
+            // marcamos que iniciamos el aterrizaje desde aquí y ponemos el botón amarillo
+            aterrizajeIniciado = true;
+            const botonAterrizar = document.getElementById('botonAterrizar');
+            botonAterrizar.classList.remove('boton-verde');
+            botonAterrizar.classList.add('boton-amarillo');
+            // también quitamos el color del botón Despegar
+            const botonDespegar = document.getElementById('botonDespegar');
+            botonDespegar.classList.remove('boton-verde');
+            botonDespegar.classList.remove('boton-amarillo');
+            // y quitamos color de RTL si hay
+            const botonRTL = document.getElementById('botonRTL'); if (botonRTL) { botonRTL.classList.remove('boton-verde'); botonRTL.classList.remove('boton-amarillo'); rtlIniciado = false; }
+            despegueIniciado = false;
+        }
+
+        function rtlDron() {
+            client.publish(`${STUDENT_ID}/autopilotServiceDemo/RTL`);
+            // marcamos que iniciamos RTL y ponemos amarillo
+            rtlIniciado = true;
+            const botonRTL = document.getElementById('botonRTL');
+            botonRTL.classList.remove('boton-verde');
+            botonRTL.classList.add('boton-amarillo');
+            // limpiar colores de otros botones
+            const botonDespegar = document.getElementById('botonDespegar'); if (botonDespegar) { botonDespegar.classList.remove('boton-verde'); botonDespegar.classList.remove('boton-amarillo'); despegueIniciado = false; }
+            const botonAterrizar = document.getElementById('botonAterrizar'); if (botonAterrizar) { botonAterrizar.classList.remove('boton-verde'); botonAterrizar.classList.remove('boton-amarillo'); aterrizajeIniciado = false; }
+        }
+
+        function moverDron(direction) {
+            client.publish(`${STUDENT_ID}/autopilotServiceDemo/go`, direction);
+        }
+
+        // función simple para cambiar el heading: valida y publica (no toca autopilot)
+        function cambiarHeading(val) {
+            // val viene del onchange del range
+            const deg = Number(val);
+            if (isNaN(deg) || deg < 0 || deg > 360) { alert('Heading inválido'); return; }
+            // publicar al topic changeHeading (payload: grados)
+            client.publish(`${STUDENT_ID}/autopilotServiceDemo/changeHeading`, String(deg));
+            // solo actualizar el número mostrado; no tocamos clases o flags de botones
+            const hv = document.getElementById('headingVal');
+            hv.innerText = deg;
+         }
+
+    </script>
+
+</body>
+</html>
