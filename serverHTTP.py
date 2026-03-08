@@ -16,7 +16,7 @@ MQTT_PORT = 1883
 MQTT_KEEPALIVE = 60
 
 # Usar STUDENT_ID fijo 'juan' según petición del usuario
-STUDENT_ID = "juan"
+STUDENT_ID = "juan2"
 print(f"[serverHTTP] usando STUDENT_ID={STUDENT_ID}")
 
 # Topics (ajusta si tus tópicos son distintos)

@@ -4,6 +4,9 @@ import tkinter as tk
 from dronLink.Dron import Dron
 import paho.mqtt.client as mqtt
 
+# Usar el mismo STUDENT_ID que el AutopilotService
+STUDENT_ID = "juan2"
+
 def restart ():
     time.sleep (5)
 
@@ -33,7 +36,7 @@ def showTelemetryInfo (telemetry_info):
 
 def connect ():
     global dron, speedSldr
-    client.publish('interfazGlobal/autopilotServiceDemo/connect')
+    client.publish(f'{STUDENT_ID}/autopilotServiceDemo/connect')
     # cambiamos el color del boton
     connectBtn['text'] = 'Conectado'
     connectBtn['fg'] = 'white'
@@ -44,21 +47,21 @@ def connect ():
 
 def takeoff ():
     global dron
-    client.publish('interfazGlobal/autopilotServiceDemo/arm_takeOff')
+    client.publish(f'{STUDENT_ID}/autopilotServiceDemo/arm_takeOff')
     arm_takeOffBtn['text'] = 'Despegando...'
     arm_takeOffBtn['fg'] = 'black'
     arm_takeOffBtn['bg'] = 'yellow'
 
 def land ():
     global dron
-    client.publish('interfazGlobal/autopilotServiceDemo/Land')
+    client.publish(f'{STUDENT_ID}/autopilotServiceDemo/Land')
     landBtn['text'] = 'Aterrizando ...'
     landBtn['fg'] = 'black'
     landBtn['bg'] = 'yellow'
 
 def RTL():
     global dron
-    client.publish('interfazGlobal/autopilotServiceDemo/RTL')
+    client.publish(f'{STUDENT_ID}/autopilotServiceDemo/RTL')
     RTLBtn['text'] = 'Retornando ...'
     RTLBtn['fg'] = 'black'
     RTLBtn['bg'] = 'yellow'
@@ -76,7 +79,7 @@ def go (direction, btn):
     except Exception:
         speed = 1.0
     payload = f"{direction}|{speed}"
-    client.publish('interfazGlobal/autopilotServiceDemo/go', payload)
+    client.publish(f'{STUDENT_ID}/autopilotServiceDemo/go', payload)
 
     # pongo en verde el boton clicado
     btn['fg'] = 'white'
@@ -89,11 +92,11 @@ def go (direction, btn):
 
 def startTelem():
     global dron
-    client.publish('interfazGlobal/autopilotServiceDemo/startTelemetry')
+    client.publish(f'{STUDENT_ID}/autopilotServiceDemo/startTelemetry')
 
 def stopTelem():
     global dron
-    client.publish('interfazGlobal/autopilotServiceDemo/stopTelemetry')
+    client.publish(f'{STUDENT_ID}/autopilotServiceDemo/stopTelemetry')
 
 def changeHeading (event):
     global dron
@@ -101,7 +104,7 @@ def changeHeading (event):
     try:
         # obtener el valor del slider y publicarlo al servicio
         deg = float(gradesSldr.get())
-        client.publish('interfazGlobal/autopilotServiceDemo/changeHeading', str(deg))
+        client.publish(f'{STUDENT_ID}/autopilotServiceDemo/changeHeading', str(deg))
     except Exception as e:
         print('Error publicando changeHeading:', e)
 
@@ -110,12 +113,12 @@ def changeNavSpeed (event):
     global speedSldr, currentDirection
     try:
         speed = float(speedSldr.get())
-        client.publish('interfazGlobal/autopilotServiceDemo/changeNavSpeed', str(speed))
+        client.publish(f'{STUDENT_ID}/autopilotServiceDemo/changeNavSpeed', str(speed))
         # reenviamos la orden de navegación para que se aplique la nueva velocidad
         try:
             if currentDirection is not None:
                 payload = f"{currentDirection}|{speed}"
-                client.publish('interfazGlobal/autopilotServiceDemo/go', payload)
+                client.publish(f'{STUDENT_ID}/autopilotServiceDemo/go', payload)
         except Exception:
             pass
     except Exception as e:
@@ -133,28 +136,27 @@ def on_message(client, userdata, message):
     # aqui proceso los eventos que me envía el autopilot service
     # basicamente son las indicaciones de que se han ido completando las operaciones solicitadas
     # lo cual me permite ir cambiando los colores de los botones
-    if message.topic == 'autopilotServiceDemo/interfazGlobal/telemetryInfo':
+    if message.topic == f'autopilotServiceDemo/{STUDENT_ID}/telemetryInfo':
         # la telemetria llega en json
         # la envio a la función que procesa esa información
         telemetry_info = json.loads(message.payload)
         showTelemetryInfo (telemetry_info)
-    if message.topic == 'autopilotServiceDemo/interfazGlobal/connected':
+    if message.topic == f'autopilotServiceDemo/{STUDENT_ID}/connected':
         connectBtn['text'] = 'Conectado'
         connectBtn['fg'] = 'white'
         connectBtn['bg'] = 'green'
 
-
-    if message.topic == 'autopilotServiceDemo/interfazGlobal/flying':
+    if message.topic == f'autopilotServiceDemo/{STUDENT_ID}/flying':
         arm_takeOffBtn['text'] = 'En el aire'
         arm_takeOffBtn['fg'] = 'white'
         arm_takeOffBtn['bg'] = 'green'
 
-    if message.topic == 'autopilotServiceDemo/interfazGlobal/landed':
+    if message.topic == f'autopilotServiceDemo/{STUDENT_ID}/landed':
         landBtn['text'] = 'En tierra'
         landBtn['fg'] = 'white'
         landBtn['bg'] = 'green'
         restart()
-    if message.topic == 'autopilotServiceDemo/interfazGlobal/atHome':
+    if message.topic == f'autopilotServiceDemo/{STUDENT_ID}/atHome':
         RTLBtn['text'] = 'En tierra'
         RTLBtn['fg'] = 'white'
         RTLBtn['bg'] = 'green'
@@ -179,7 +181,7 @@ def crear_ventana():
     client.connect(broker_address, broker_port)
 
     # me subscribo a cualquier mensaje  que venga del autopilot service
-    client.subscribe('autopilotServiceDemo/interfazGlobal/#')
+    client.subscribe(f'autopilotServiceDemo/{STUDENT_ID}/#')
     client.loop_start()
 
     dron = Dron()

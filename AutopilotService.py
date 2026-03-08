@@ -7,7 +7,7 @@ import json
 from dronLink.Dron import Dron
 
 # Usar STUDENT_ID fijo 'juan' según petición del usuario
-STUDENT_ID = "juan"
+STUDENT_ID = "juan2"
 print(f"[AutopilotService] usando STUDENT_ID={STUDENT_ID}")
 
 # variable global mínima para almacenar a qué tópico responder

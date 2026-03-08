@@ -23,3 +23,15 @@ C:\Users\aleix\Desktop\pd\ProyectoDeDrones\DashboardLocalCsharp\Formulario\obj\D
 C:\Users\aleix\Desktop\pd\ProyectoDeDrones\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.Up2Date
 C:\Users\aleix\Desktop\pd\ProyectoDeDrones\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.exe
 C:\Users\aleix\Desktop\pd\ProyectoDeDrones\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.pdb
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\bin\Debug\Formulario.exe.config
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\bin\Debug\Formulario.exe
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\bin\Debug\Formulario.pdb
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\bin\Debug\csDronLink.dll
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.AssemblyReference.cache
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.Form1.resources
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.Properties.Resources.resources
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.GenerateResource.cache
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.CoreCompileInputs.cache
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.csproj.Up2Date
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.exe
+C:\Users\aleix\OneDrive\Desktop\prueba final v1 3-3-26\V1\DashboardLocalCsharp\Formulario\obj\Debug\Formulario.pdb
