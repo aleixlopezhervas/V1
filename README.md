@@ -49,8 +49,8 @@ Estas funcionalidades se pueden ver demostradas en el siguiente vídeo:
 ## 🎥 Project Demo
 
 <p align="center">
-  <a href="[https://www.youtube.com/watch?v=MSE9zdbZ_DE](https://www.youtube.com/watch?v=FR_ebnw7Q-U)">
-    <img src="[https://img.youtube.com/vi/MSE9zdbZ_DE](https://www.youtube.com/watch?v=FR_ebnw7Q-U)/maxresdefault.jpg" width="700">
+  <a href="https://www.youtube.com/watch?v=FR_ebnw7Q-U">
+    <img src="https://img.youtube.com/vi/FR_ebnw7Q-U/maxresdefault.jpg" width="700">
   </a>
 </p>
 
