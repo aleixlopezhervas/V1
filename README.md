@@ -20,11 +20,13 @@ El objetivo de este apartado es poder controlar nuestro dron desde un dispositiv
    - Editar “changeHeading” ya que el programa petaba si ponemos el heading a 0º.
 
 Estas funcionalidades se pueden ver demostradas en el siguiente vídeo:
-## 🎥 Demo
+## 🎥 Project Demo
 
-<a href="https://www.youtube.com/watch?v=MSE9zdbZ_DE">
-  <img src="https://img.youtube.com/vi/MSE9zdbZ_DE/maxresdefault.jpg" width="700">
-</a>
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=MSE9zdbZ_DE">
+    <img src="https://img.youtube.com/vi/MSE9zdbZ_DE/maxresdefault.jpg" width="700">
+  </a>
+</p>
 
 ## 2. Criterios de evaluación    
 
