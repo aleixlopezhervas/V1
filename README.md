@@ -1,24 +1,26 @@
-# Guía para el proyecto de drones   
+# Notas de la Versión 1 del Proyecto de Drones [UPC EETAC 2026] - Aleix López
  
-## 1. Introducción   
+## 4.1.1 → Modificaciones en “DashboardLocalPython.py”
 
-El proceso que se describe en esta guía tiene por objetivo el desarrollo de una aplicación de control de un dron (o varios) que pueda demostrarse en el DroneLab del Campus del Baix Llobregat. Esta aplicación se desarrollará en equipos de 3 o 4 personas.
-El proceso permite el aprendizaje de una variedad de conceptos, tecnologías y herramientas. En particular, se aprende (entre otras cosas):   
+El objetivo de este apartado es poder controlar nuestro dron desde un dispositivo local mediante python con los siguientes retos:
 
-*	Cómo es un dron cuatrimotor y qué componentes tiene
-*	Cómo se controla el dron desde un programa de ordenador (un portátil) o desde un teléfono móvil
-*	Cómo se desarrolla una interfaz gráfica para controlar el dron, en Python o en C#, que incluya mapas geolocalizados para visualizar la posición del dron
-*	Cómo se articula la comunicación entre los diferentes dispositivos que intervienen en la aplicación
-*	Cómo se transmite/recibe el stream de vídeo capturado por la cámara del dron
-*	Cómo se reconocen objetos en el stream de vídeo
+1. Modificar el código para que las operaciones de aterrizaje y RTL tengan un comportamiento similar a la operación de despegue (llamada no bloqueante)
+2. Incorporar al bloque de datos de telemetría algún dato más (por ejemplo, el estado del dron o la velocidad). Conviene mirar la documentación de DronLink para ver qué información viene en el paquete de datos de telemetría.
+3. Añadir algún botón más para realizar una nueva función. De nuevo, mirar la documentación de DronLink en busca de inspiración.
 
-La aplicación tiene 4 versiones. La versión 1 está muy guiada. Se desarrolla paso a paso siguiendo las instrucciones de esta guía. En cada paso se introduce algún concepto/herramienta/tecnología nueva. Este repositorio proporciona los códigos implicados en cada paso de manera que basta comprobar que el código funciona correctamente. La guía también propone sencillos ejercicios que requieren la modificación del código proporcionado para corregir algún mal funcionamiento o para introducir alguna nueva funcionalidad. Es muy conveniente que cada miembro del equipo desarrolle de forma individual esta primera versión, aunque naturalmente compartiendo dudas y progresos con los compañeros de equipo y con los profesores.    
- 
-La versión 2 tiene unos requisitos prefijados, pero está mucho menos guiada que la versión 1. También se proporcionarán algunos recursos útiles pero la tarea fundamental consistirá en la investigación y experimentación necesarias para implementar las nuevas funcionalidades. El trabajo de la versión 2 se beneficiará mucho de un buen reparto de tareas entre los miembros del equipo.    
- 
-Acabada la versión 2 cada equipo deberá decidir las funcionalidades que tendrá la versión final de su aplicación. En esta guía se proporcionarán algunas ideas que pueden resultar de inspiración. Cada equipo deberá decidir también que subconjunto de las funcionalidades estará ya disponible en la versión 3, que será una versión intermedia pero que deberá poder ser demostrada en el DroneLab.     
- 
-La versión 4 será la versión final con todas las funcionalidades previstas. Además de demostrar el correcto funcionamiento en el DroneLab, cada equipo deberá entregar el resultado en forma de repositorio en GitHub, que incluya los códigos desarrollados, explicaciones detalladas sobre cómo instalar y poner en marcha la aplicación y vídeos que muestren el funcionamiento y describan cómo está organizado el código desarrollado.    
+* Implementaciones Reto 1:
+  - Añadidas las funciones “onGround” y “atHome”, siguen con el mismo comportamiento que la función incluida “inTheAir”.
+  - También hay que hacer que la función “land” y “RTL” sean no bloqueantes y hagan un callback a la funciones mencionadas anteriormente.
+* Implementaciones Reto 2:
+  - En el bloque de telemetría añadir el label “groundSpeed” siguiendo la base de los modelos que ya estaban implementados.
+ * Implementaciones Reto 3:
+   - Añadida una barra deslizante para seleccionar la altura del “takeOff”.
+   - Editar “inTheAir”, “onGround” y “atHome” para que cuando haga un despegue los botones de aterrizaje no tengan color y viceversa.
+   - Añadida una barra deslizante para cambiar la altura de vuelo, después de revisar “dron_altitude.py”, esto se consigue gracias a la nueva función “changeAltitude”.
+   - Editar “changeHeading” ya que el programa petaba si ponemos el heading a 0º.
+
+Estas funcionalidades se pueden ver demostradas en el siguiente vídeo:
+https://www.youtube.com/watch?v=MSE9zdbZ_DE
 
 ## 2. Criterios de evaluación    
 
